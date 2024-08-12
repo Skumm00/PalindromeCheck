@@ -1,14 +1,12 @@
 import random
-import os
 
 def generate_word():
-    # Random words for the game (palindromes)
     words = ["racecar", "level", "rotor", "madam", "kayak", "deified", "civic", "stats", "noon", "refer"]
     return random.choice(words)
 
 def get_guess():
-    # Get the player's guess
     while True:
+        
         guess = input("Enter your guess: ").lower()
         if len(guess) == 1 and guess.isalpha():
             return guess
@@ -16,20 +14,18 @@ def get_guess():
             print("Please enter only one letter.")
 
 def check_guess(guess, word):
-    # Check and return a message
     if guess in word:
         return f"Good guess! {guess} is in the word."
     else:
         return f"Sorry, {guess} is not in the word."
 
 def is_palindrome(word):
-    # Check if the word is a palindrome
     return word == word[::-1]
 
 def play_game(difficulty):
-    # Play the palindrome game
+    
     word = generate_word()
-    word_set = set(word)  # To keep track of unique letters in the word
+    word_set = set(word)
     guesses = []
     max_guesses = {'easy': 7, 'medium': 5, 'hard': 3}[difficulty]
     print(f"\nDifficulty: {difficulty.capitalize()}")
@@ -44,42 +40,38 @@ def play_game(difficulty):
             guesses.append(guess)
             print(check_guess(guess, word))
 
-            # Display guessed letters
             guessed_letters = set(guesses)
             if guessed_letters == word_set:
+                
                 print(f"Congratulations! You guessed the word: {word}.")
-                return True  # Game won
+                return True
 
-            # Check if the guessed letters form a palindrome
             guessed_letters_str = "".join(sorted(guesses))
             if is_palindrome(guessed_letters_str):
                 print("You've guessed a palindrome!")
 
-            # Provide hints based on difficulty
             if difficulty == 'hard' and len(guesses) == max_guesses - 2:
+                
                 print("Warning: You're close to running out of guesses!")
             if difficulty == 'medium' and len(guesses) == max_guesses - 3:
+                
                 print("Hint: You're getting closer!")
 
     print(f"Sorry, you ran out of guesses! The word was {word}")
-    return False  # Game lost
+    return False
 
 def get_player_name():
-    # Get the player's name
-    name = input("Enter your name: ").strip()
-    return name
+    return input("Enter your name: ").strip()
 
 def display_score(player_name, score):
-    # Show the player's score
     print(f"\n{player_name}, your score is: {score}")
 
 def play_again():
-    # Ask if the player wants to play again
     return validate_input("Do you want to play again? (y/n): ", ['y', 'n']) == 'y'
 
 def validate_input(input_str, valid_options):
-    # Validate the input
     while True:
+        
         user_input = input(input_str).lower()
         if user_input in valid_options:
             return user_input
@@ -87,76 +79,34 @@ def validate_input(input_str, valid_options):
             print(f"Invalid input. Please enter one of {', '.join(valid_options)}.")
 
 def display_instructions():
-    # Show the instructions
-    print("\nWelcome to the Palindrome Checker game!")
+    
+    print("\nWelcome to the Palindrome Checker!")
     print("Guess the letters to reveal the palindrome.")
     print("You have a limited number of guesses!")
+    
     print("Try to guess all letters correctly within the allowed number of guesses.")
     print("If you get stuck, you can get a hint!")
 
-def save_high_score(player_name, score):
-    # Save the high score
-    if player_name:
-        with open('high_scores.txt', 'a') as file:
-            file.write(f"{player_name}: {score}\n")
-        print(f"High score saved for {player_name}: {score}")
-    else:
-        print("The value of the name cannot be empty!")
-
-def update_leaderboard(player_name, score):
-    # Update leaderboard with new high scores
-    leaderboard = []
-    if os.path.exists('high_scores.txt'):
-        with open('high_scores.txt', 'r') as file:
-            leaderboard = [line.strip() for line in file]
-
-    leaderboard.append(f"{player_name}: {score}")
-    leaderboard.sort(key=lambda x: int(x.split(': ')[1]), reverse=True)
-
-    with open('high_scores.txt', 'w') as file:
-        for entry in leaderboard[:10]:  # Keep only the top 10 scores
-            file.write(f"{entry}\n")
-    print("Leaderboard updated!")
-
-def give_hint(word, guesses):
-    # Provide a hint by revealing one of the letters not yet guessed
-    remaining_letters = set(word) - set(guesses)
-    if remaining_letters:
-        hint_letter = random.choice(list(remaining_letters))
-        print(f"Hint: One of the remaining letters is '{hint_letter}'.")
-    else:
-        print("No more hints available.")
-
 def display_statistics(total_games, wins, max_guesses, difficulty):
-    # Display game statistics
+    
     win_rate = wins / total_games * 100 if total_games > 0 else 0
+
     print(f"\nGame Statistics:")
     print(f"Total games played: {total_games}")
+    
     print(f"Games won: {wins}")
     print(f"Win rate: {win_rate:.2f}%")
+    
     print(f"Current difficulty: {difficulty.capitalize()}")
     print(f"Max guesses allowed: {max_guesses}")
 
-def display_leaderboard():
-    # Display the leaderboard
-    if os.path.exists('high_scores.txt'):
-        print("\nLeaderboard:")
-        with open('high_scores.txt', 'r') as file:
-            scores = [line.strip() for line in file]
-            if scores:
-                for rank, score in enumerate(scores[:10], 1):
-                    print(f"{rank}. {score}")
-            else:
-                print("No high scores yet.")
-    else:
-        print("No high scores file found.")
 
 def select_difficulty():
-    # Select the difficulty level
     return validate_input("Select difficulty (easy/medium/hard): ", ['easy', 'medium', 'hard'])
 
+
 def main():
-    # The main function
+    
     display_instructions()
     player_name = get_player_name()
     score = 0
@@ -164,21 +114,22 @@ def main():
     wins = 0
 
     while True:
+        
         difficulty = select_difficulty()
         max_guesses = {'easy': 7, 'medium': 5, 'hard': 3}[difficulty]
         total_games += 1
+        
         if play_game(difficulty):
             score += 1
             wins += 1
-            update_leaderboard(player_name, score)
-        else:
-            update_leaderboard(player_name, score)
 
         display_score(player_name, score)
         display_statistics(total_games, wins, max_guesses, difficulty)
-        display_leaderboard()
+      
 
         if not play_again():
+            
+            print(f"\nThank you for playing, {player_name}! Goodbye!")
             break
 
 if __name__ == "__main__":
